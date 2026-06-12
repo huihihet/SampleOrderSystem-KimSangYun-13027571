@@ -27,7 +27,7 @@ class JsonProductionQueueRepositoryTest {
     }
 
     private ProductionQueueItem createItem(String queueId, String orderId, String sampleId) {
-        return new ProductionQueueItem(queueId, orderId, sampleId, 50, 12, 360, "2026-06-12T10:00:00");
+        return new ProductionQueueItem(queueId, orderId, sampleId, 100, 50, 12, 360, "2026-06-12T10:00:00");
     }
 
     @Test

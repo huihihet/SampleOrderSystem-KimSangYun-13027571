@@ -425,7 +425,7 @@ orderId 자동 생성: `"ORD-" + LocalDate.now().format(DateTimeFormatter.BASIC_
 ```java
 void printApprovalMenu()                      // [1] 주문 승인  [2] 주문 거절  [0] 뒤로 (route(3) 서브메뉴용)
 void printPrompt(String prompt)               // "선택 > " 프롬프트
-void printOrderList(List<Order> orders)       // 번호·orderId·시료명·고객명·수량(ea)·상태(ANSI 색상) 테이블
+void printOrderList(List<Order> orders, Map<String, String> sampleNames)  // 번호·orderId·시료명·고객명·수량(ea)·상태(ANSI 색상) 테이블
 void printApprovalDetail(Sample sample, Order order, int requiredQty, int actualProdQty, int prodTime)
     // "시료 {name} 현재 재고 {stock} ea  주문 수량 {quantity} ea  부족분 {requiredQty} ea"
     // "실생산량 {actualProdQty} ea / {prodTime} min"
@@ -455,7 +455,7 @@ void printEmpty()
 | `OrderViewTest` | 출력 포맷 | 주문 목록 테이블, 성공/오류 메시지 |
 | `ProductionLineViewTest` | 출력 포맷 | 큐 목록 테이블 |
 | `OrderControllerTest` | placeOrder / approveOrder / rejectOrder | 재고 충분 CONFIRMED 전이, 재고 부족 PRODUCING+큐 등록, 거절 REJECTED |
-| `ProductionLineControllerTest` | createQueueItem / completeProduction | 수율 계산 경계값, 완료 후 재고 증가·상태 전이·큐 삭제 |
+| `ProductionLineControllerTest` | registerProductionQueue / completeProduction | 수율 계산 경계값, 완료 후 재고 증가·상태 전이·큐 삭제 |
 
 **수율 계산 경계값 테스트 케이스**:
 

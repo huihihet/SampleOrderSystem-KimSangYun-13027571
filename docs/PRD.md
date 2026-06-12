@@ -257,7 +257,7 @@ REJECTED   → 주문 거절 (모니터링 제외)
 |---------|---------|
 | `SampleController` | Long ID → String ID, `InMemorySampleRepository` → `JsonSampleRepository`, `update`/`delete` 기능 제거(PRD 범위 외) |
 | `SampleView` | 메뉴 항목 조정 (update/delete 제거), 테이블 포맷은 그대로 재사용 |
-| `Router` | 단일 Controller → 5개 Controller 주입, 5개 메뉴로 확장 |
+| `Router` | 단일 Controller → 5개 Controller 주입, 6개 메뉴로 확장 |
 | `InMemorySampleRepository` | **제거** — JSON 구현체로 대체 |
 | `Sample` (엔티티) | **제거** — DataPersistence 버전(Getter/Setter)으로 대체 |
 

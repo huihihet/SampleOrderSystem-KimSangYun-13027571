@@ -5,6 +5,7 @@ public class ProductionQueueItem {
     private String queueId;
     private String orderId;
     private String sampleId;
+    private int orderQuantity;
     private int requiredQuantity;
     private int actualProductionQuantity;
     private int totalProductionTime;
@@ -13,11 +14,13 @@ public class ProductionQueueItem {
     public ProductionQueueItem() {}
 
     public ProductionQueueItem(String queueId, String orderId, String sampleId,
-                                int requiredQuantity, int actualProductionQuantity,
+                                int orderQuantity, int requiredQuantity,
+                                int actualProductionQuantity,
                                 int totalProductionTime, String enqueuedAt) {
         this.queueId = queueId;
         this.orderId = orderId;
         this.sampleId = sampleId;
+        this.orderQuantity = orderQuantity;
         this.requiredQuantity = requiredQuantity;
         this.actualProductionQuantity = actualProductionQuantity;
         this.totalProductionTime = totalProductionTime;
@@ -32,6 +35,9 @@ public class ProductionQueueItem {
 
     public String getSampleId() { return sampleId; }
     public void setSampleId(String sampleId) { this.sampleId = sampleId; }
+
+    public int getOrderQuantity() { return orderQuantity; }
+    public void setOrderQuantity(int orderQuantity) { this.orderQuantity = orderQuantity; }
 
     public int getRequiredQuantity() { return requiredQuantity; }
     public void setRequiredQuantity(int requiredQuantity) { this.requiredQuantity = requiredQuantity; }
