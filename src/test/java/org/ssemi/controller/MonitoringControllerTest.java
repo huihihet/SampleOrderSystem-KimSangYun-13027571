@@ -139,10 +139,11 @@ class MonitoringControllerTest {
     }
 
     @Test
-    void showMonitoring_CONFIRMED_제외_demandSum() {
+    void showMonitoring_CONFIRMED_포함_demandSum() {
         SpyMonitoringView spy = new SpyMonitoringView();
         Sample sample = new Sample("S-001", "실리콘 웨이퍼", 30, 0.92, 10);
-        // CONFIRMED 주문만 있으면 demandSum=0, stock=10 >= 0 → 여유
+        // 재고 차감은 출고 시점: CONFIRMED는 재고 미차감 상태이므로 demand에 포함
+        // stock=10 < demand=100 → 부족
         Order confirmed = new Order("O-001", "S-001", "홍길동", 100, OrderStatus.CONFIRMED);
         MonitoringController ctrl = new MonitoringController(
             new StubSampleRepository(sample),
@@ -150,7 +151,7 @@ class MonitoringControllerTest {
             spy
         );
         ctrl.showMonitoring();
-        assertEquals("여유", spy.capturedSampleStatuses.get(0).stockLevel());
+        assertEquals("부족", spy.capturedSampleStatuses.get(0).stockLevel());
     }
 
     @Test
@@ -226,14 +227,14 @@ class MonitoringControllerTest {
     }
 
     @Test
-    void calcStockLevel_demand_0_여유() {
+    void calcStockLevel_RELEASE만있으면_demandSum_0_여유() {
         SpyMonitoringView spy = new SpyMonitoringView();
         Sample sample = new Sample("S-001", "실리콘 웨이퍼", 30, 0.92, 10);
-        // CONFIRMED 주문 → demandSum=0, stock=10 → 여유
-        Order confirmed = new Order("O-001", "S-001", "홍길동", 100, OrderStatus.CONFIRMED);
+        // RELEASE 주문만 있으면 demandSum=0, stock=10 → 여유
+        Order released = new Order("O-001", "S-001", "홍길동", 100, OrderStatus.RELEASE);
         MonitoringController ctrl = new MonitoringController(
             new StubSampleRepository(sample),
-            new StubOrderRepository(confirmed),
+            new StubOrderRepository(released),
             spy
         );
         ctrl.showMonitoring();

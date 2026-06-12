@@ -43,7 +43,7 @@ public class ProductionLineController {
         AtomicBoolean active = new AtomicBoolean(true);
         Thread t = new Thread(() -> {
             while (active.get()) {
-                try { Thread.sleep(3000); } catch (InterruptedException e) { break; }
+                try { Thread.sleep(1000); } catch (InterruptedException e) { break; }
                 if (active.get()) renderQueue();
             }
         }, "prodline-refresh");
@@ -56,6 +56,7 @@ public class ProductionLineController {
     }
 
     private void renderQueue() {
+        checkAndAutoComplete();
         List<ProductionQueueItem> items = queueRepo.findAll();
         if (items.isEmpty()) {
             view.printEmpty();
@@ -65,6 +66,28 @@ public class ProductionLineController {
         Map<String, String> sampleNames = buildSampleNames(items);
         view.printQueueList(items, sampleNames);
         view.printExitHint();
+    }
+
+    // 생산 시간이 지난 항목을 자동 완료: 재고 반영 + 주문 CONFIRMED + 큐 제거
+    public void checkAndAutoComplete() {
+        LocalDateTime now = LocalDateTime.now();
+        for (ProductionQueueItem item : List.copyOf(queueRepo.findAll())) {
+            // totalProductionTime = 단위당 초수, 전체 완료 = 단위당 초수 × 실생산량
+            long totalSecs = (long) item.getTotalProductionTime() * item.getActualProductionQuantity();
+            LocalDateTime completionTime = LocalDateTime.parse(item.getEnqueuedAt())
+                .plusSeconds(totalSecs);
+            if (!now.isBefore(completionTime)) {
+                sampleRepo.findById(item.getSampleId()).ifPresent(sample -> {
+                    sample.addStock(item.getActualProductionQuantity());
+                    sampleRepo.update(sample);
+                });
+                orderRepo.findById(item.getOrderId()).ifPresent(order -> {
+                    order.setStatus(OrderStatus.CONFIRMED);
+                    orderRepo.update(order);
+                });
+                queueRepo.deleteById(item.getQueueId());
+            }
+        }
     }
 
     public void completeProduction() {
@@ -150,7 +173,7 @@ public class ProductionLineController {
             return;
         }
         int actualProdQty = (int) Math.ceil(requiredQty / effectiveYield);
-        int totalProdTime = sample.getAvgProductionTime() * actualProdQty;
+        int totalProdTime = sample.getAvgProductionTime(); // 단위당 생산 시간(초)
         String queueId = "Q-" + String.format("%03d", queueRepo.findAll().size() + 1);
         String enqueuedAt = LocalDateTime.now().toString();
         queueRepo.enqueue(new ProductionQueueItem(

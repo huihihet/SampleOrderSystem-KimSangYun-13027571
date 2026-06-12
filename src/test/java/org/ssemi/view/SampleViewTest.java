@@ -52,7 +52,7 @@ class SampleViewTest {
         String out = output();
         assertTrue(out.contains("S-001"), "ID 포함");
         assertTrue(out.contains("실리콘 웨이퍼-8인치"), "시료명 포함");
-        assertTrue(out.contains("min/ea"), "단위 min/ea 포함");
+        assertTrue(out.contains("sec/ea"), "단위 sec/ea 포함");
         assertTrue(out.contains("ea"), "단위 ea 포함");
         assertTrue(out.contains("-".repeat(64)), "구분선 포함");
     }

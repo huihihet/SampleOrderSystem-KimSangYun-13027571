@@ -1,9 +1,86 @@
 [
   {
+    "orderId": "ORD-20260610-0001",
+    "sampleId": "S-001",
+    "customerName": "서울대학교 나노연구소",
+    "quantity": 50,
+    "status": "RELEASE"
+  },
+  {
+    "orderId": "ORD-20260610-0002",
+    "sampleId": "S-004",
+    "customerName": "KAIST 반도체연구실",
+    "quantity": 200,
+    "status": "RELEASE"
+  },
+  {
+    "orderId": "ORD-20260611-0001",
+    "sampleId": "S-006",
+    "customerName": "LG전자 연구소",
+    "quantity": 80,
+    "status": "RELEASE"
+  },
+  {
     "orderId": "ORD-20260612-0001",
     "sampleId": "S-003",
-    "customerName": "파운딀",
+    "customerName": "파운드리코리아",
     "quantity": 200,
     "status": "PRODUCING"
+  },
+  {
+    "orderId": "ORD-20260612-0002",
+    "sampleId": "S-007",
+    "customerName": "연세대학교 전자공학과",
+    "quantity": 150,
+    "status": "PRODUCING"
+  },
+  {
+    "orderId": "ORD-20260612-0003",
+    "sampleId": "S-010",
+    "customerName": "SK하이닉스 기술팀",
+    "quantity": 100,
+    "status": "PRODUCING"
+  },
+  {
+    "orderId": "ORD-20260612-0004",
+    "sampleId": "S-005",
+    "customerName": "퀄컴코리아",
+    "quantity": 60,
+    "status": "CONFIRMED"
+  },
+  {
+    "orderId": "ORD-20260612-0005",
+    "sampleId": "S-001",
+    "customerName": "나",
+    "quantity": 80,
+    "status": "CONFIRMED"
+  },
+  {
+    "orderId": "ORD-20260612-0006",
+    "sampleId": "S-004",
+    "customerName": "삼성전자 반도체연구소",
+    "quantity": 300,
+    "status": "RESERVED"
+  },
+  {
+    "orderId": "ORD-20260612-0007",
+    "sampleId": "S-009",
+    "customerName": "부산대학교 나노소자연구실",
+    "quantity": 40,
+    "status": "RESERVED"
+  },
+  {
+    "orderId": "ORD-20260611-0004",
+    "sampleId": "S-009",
+    "customerName": "이화여대 나노소자연구실",
+    "quantity": 40,
+    "status": "REJECTED"
+  },
+  {
+    "orderId": "ORD-20260612-0008",
+    "sampleId": "S-008",
+    "customerName": "퀄컴코리아",
+    "quantity": 60,
+    "status": "REJECTED"
   }
 ]

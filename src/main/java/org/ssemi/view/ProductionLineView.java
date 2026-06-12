@@ -34,29 +34,32 @@ public class ProductionLineView {
 
     public void printQueueList(List<ProductionQueueItem> items, Map<String, String> sampleNames) {
         clearScreen();
-        System.out.println("=".repeat(63));
-        System.out.printf("  생산 현황  (%s 기준)%n", LocalDateTime.now().format(TIME_FMT));
-        System.out.println("=".repeat(63));
-        System.out.printf("%-6s %-22s %-18s %-9s %-9s %-10s %s%n",
-            "순서", "주문번호", "시료명", "주문량", "부족분", "실생산량", "예상완료");
-        System.out.println("-".repeat(88));
+        System.out.println("=".repeat(70));
+        System.out.printf("  생산 현황  (%s 기준)%n",
+            LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")));
+        System.out.println("=".repeat(70));
+        System.out.printf("%-4s %-22s %-16s %-8s %-12s %-10s %s%n",
+            "순서", "주문번호", "시료명", "목표량", "잔여량", "완료시각", "남은시간");
+        System.out.println("-".repeat(80));
         for (int i = 0; i < items.size(); i++) {
             ProductionQueueItem item = items.get(i);
-            String sampleName = sampleNames.getOrDefault(item.getSampleId(), item.getSampleId());
-            String expectedTime = calcExpectedTime(item.getEnqueuedAt(), item.getTotalProductionTime());
-            String remaining   = calcRemaining(item.getEnqueuedAt(), item.getTotalProductionTime());
-            System.out.printf("%-6d %-22s %-18s %-9s %-9s %-10s %s %s%n",
+            String sampleName   = sampleNames.getOrDefault(item.getSampleId(), item.getSampleId());
+            int    remaining    = calcRemainingUnits(item);
+            String expectedTime = calcExpectedTime(item.getEnqueuedAt(), item.getTotalProductionTime(),
+                                                   item.getActualProductionQuantity());
+            String timeLeft     = calcTimeLeft(item.getEnqueuedAt(), item.getTotalProductionTime(),
+                                               item.getActualProductionQuantity());
+            System.out.printf("%-4d %-22s %-16s %-8s %-12s %-10s %s%n",
                 i + 1,
                 item.getOrderId(),
                 sampleName,
-                item.getOrderQuantity() + " ea",
-                item.getRequiredQuantity() + " ea",
                 item.getActualProductionQuantity() + " ea",
+                remaining + " ea",
                 expectedTime,
-                remaining);
+                timeLeft);
         }
-        System.out.println("-".repeat(88));
-        System.out.println("* 부족분 = 주문량 - 재고, 실생산량 = ceil(부족분 / (수율 × 0.9))");
+        System.out.println("-".repeat(80));
+        System.out.println("* totalProductionTime = 단위당 생산 시간(초)  |  잔여량은 1초마다 갱신");
     }
 
     public void printExitHint() {
@@ -82,21 +85,41 @@ public class ProductionLineView {
         System.out.print("  [ Enter 키로 계속 ]  ");
     }
 
-    private String calcExpectedTime(String enqueuedAt, int totalMinutes) {
+    // 잔여 생산 수량: 경과 초 / 단위당 초수 = 완료된 수량 → 목표 - 완료
+    private int calcRemainingUnits(ProductionQueueItem item) {
         try {
-            LocalDateTime enqueued = LocalDateTime.parse(enqueuedAt);
-            return enqueued.plusMinutes(totalMinutes).format(TIME_FMT);
+            long elapsed   = ChronoUnit.SECONDS.between(
+                LocalDateTime.parse(item.getEnqueuedAt()), LocalDateTime.now());
+            int  secsEach  = item.getTotalProductionTime();   // 단위당 초수
+            int  total     = item.getActualProductionQuantity();
+            if (elapsed <= 0 || secsEach <= 0) return total;
+            int done = (int) Math.min(elapsed / secsEach, total);
+            return total - done;
+        } catch (Exception e) {
+            return item.getActualProductionQuantity();
+        }
+    }
+
+    // 예상 완료 시각 = enqueuedAt + (단위당 초 × 총 수량)
+    private String calcExpectedTime(String enqueuedAt, int secsEach, int totalQty) {
+        try {
+            return LocalDateTime.parse(enqueuedAt)
+                .plusSeconds((long) secsEach * totalQty)
+                .format(TIME_FMT);
         } catch (Exception e) {
             return "??:??";
         }
     }
 
-    private String calcRemaining(String enqueuedAt, int totalMinutes) {
+    // 남은 시간 = 완료 예정 - now
+    private String calcTimeLeft(String enqueuedAt, int secsEach, int totalQty) {
         try {
-            LocalDateTime expected = LocalDateTime.parse(enqueuedAt).plusMinutes(totalMinutes);
-            long mins = ChronoUnit.MINUTES.between(LocalDateTime.now(), expected);
-            if (mins <= 0) return "(완료 대기)";
-            return String.format("(%dh %dm 남음)", mins / 60, mins % 60);
+            LocalDateTime expected = LocalDateTime.parse(enqueuedAt)
+                .plusSeconds((long) secsEach * totalQty);
+            long secs = ChronoUnit.SECONDS.between(LocalDateTime.now(), expected);
+            if (secs <= 0) return "(완료 대기)";
+            if (secs < 60) return String.format("(%ds)", secs);
+            return String.format("(%dm %ds)", secs / 60, secs % 60);
         } catch (Exception e) {
             return "";
         }

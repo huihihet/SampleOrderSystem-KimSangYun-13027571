@@ -35,7 +35,7 @@ public class SampleView {
             System.out.printf("%-10s %-26s %-14s %-8s %s%n",
                 s.getSampleId(),
                 s.getName(),
-                s.getAvgProductionTime() + " min/ea",
+                s.getAvgProductionTime() + " sec/ea",
                 String.format("%.2f", s.getYield()),
                 s.getStock() + " ea");
         }

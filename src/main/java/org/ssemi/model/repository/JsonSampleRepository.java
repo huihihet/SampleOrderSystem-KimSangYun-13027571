@@ -48,7 +48,7 @@ public class JsonSampleRepository implements SampleRepository {
     public List<Sample> findByNameContaining(String keyword) {
         if (keyword == null || keyword.isBlank()) return findAll();
         return findAll().stream()
-            .filter(s -> s.getName().contains(keyword))
+            .filter(s -> s.getName().toLowerCase().contains(keyword.toLowerCase()))
             .collect(Collectors.toList());
     }
 

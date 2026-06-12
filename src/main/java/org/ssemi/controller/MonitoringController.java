@@ -65,7 +65,8 @@ public class MonitoringController {
                 int demandSum = orders.stream()
                     .filter(o -> o.getSampleId().equals(sample.getSampleId()))
                     .filter(o -> o.getStatus() == OrderStatus.RESERVED
-                              || o.getStatus() == OrderStatus.PRODUCING)
+                              || o.getStatus() == OrderStatus.PRODUCING
+                              || o.getStatus() == OrderStatus.CONFIRMED)
                     .mapToInt(Order::getQuantity)
                     .sum();
                 return new SampleStatus(

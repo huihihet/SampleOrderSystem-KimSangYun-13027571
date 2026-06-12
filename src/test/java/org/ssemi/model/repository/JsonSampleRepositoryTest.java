@@ -130,6 +130,17 @@ class JsonSampleRepositoryTest {
     }
 
     @Test
+    void findByNameContaining_대소문자_무관_검색() {
+        repository.save(new Sample("S-001", "GaN-HEMT-A", 30, 0.85, 200));
+        repository.save(new Sample("S-002", "SiC-MOSFET-B", 45, 0.72, 100));
+
+        assertEquals(1, repository.findByNameContaining("gan").size());
+        assertEquals(1, repository.findByNameContaining("GAN").size());
+        assertEquals(1, repository.findByNameContaining("Gan").size());
+        assertEquals(1, repository.findByNameContaining("mosfet").size());
+    }
+
+    @Test
     void findById_존재하지_않는_ID_Optional_empty() {
         Optional<Sample> found = repository.findById("S-999");
 

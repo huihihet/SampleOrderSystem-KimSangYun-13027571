@@ -33,6 +33,33 @@ public class OrderView {
         System.out.print("선택 > ");
     }
 
+    public void printSampleCatalog(List<Sample> samples) {
+        clearScreen();
+        System.out.println("=".repeat(63));
+        System.out.println("  시료 주문");
+        System.out.println("=".repeat(63));
+        System.out.printf("  %-4s %-10s %-20s %-10s %-6s %s%n",
+            "번호", "ID", "시료명", "생산시간", "수율", "현재 재고");
+        System.out.println("  " + "-".repeat(61));
+        for (int i = 0; i < samples.size(); i++) {
+            Sample s = samples.get(i);
+            String stockStr = s.getStock() == 0
+                ? RED + "0 ea (고갈)" + RESET
+                : s.getStock() < 50
+                    ? ORANGE + s.getStock() + " ea" + RESET
+                    : s.getStock() + " ea";
+            System.out.printf("  %-4d %-10s %-20s %-10s %-6s %s%n",
+                i + 1,
+                s.getSampleId(),
+                s.getName(),
+                s.getAvgProductionTime() + " sec/ea",
+                String.format("%.0f%%", s.getYield() * 100),
+                stockStr);
+        }
+        System.out.println("  " + "-".repeat(61));
+        System.out.println();
+    }
+
     public void printPrompt(String prompt) {
         System.out.print(prompt);
     }
@@ -75,7 +102,8 @@ public class OrderView {
         } else {
             System.out.printf("시료 %s  현재 재고 %d ea  주문 수량 %d ea  부족분 %d ea%n",
                 sample.getName(), sample.getStock(), order.getQuantity(), requiredQty);
-            System.out.printf("실생산량 %d ea / %d min%n", actualProdQty, prodTime);
+            System.out.printf("실생산량 %d ea  (단위당 %d초 × %d ea = %d초)%n",
+                actualProdQty, prodTime, actualProdQty, (long) prodTime * actualProdQty);
             System.out.println("상태 변경  RESERVED → " + ORANGE + "PRODUCING" + RESET);
         }
     }

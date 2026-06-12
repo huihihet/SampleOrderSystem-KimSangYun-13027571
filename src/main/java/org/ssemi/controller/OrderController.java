@@ -36,14 +36,28 @@ public class OrderController {
     }
 
     public void placeOrder() {
-        view.printPrompt("시료 ID > ");
-        String sampleId = scanner.nextLine().trim();
-
-        Optional<Sample> sampleOpt = sampleRepo.findById(sampleId);
-        if (sampleOpt.isEmpty()) {
-            view.printError("존재하지 않는 시료 ID입니다.");
+        List<Sample> samples = sampleRepo.findAll();
+        if (samples.isEmpty()) {
+            view.printError("등록된 시료가 없습니다.");
             return;
         }
+
+        view.printSampleCatalog(samples);
+        view.printPrompt("번호 선택 (0=취소) > ");
+        int index;
+        try {
+            index = Integer.parseInt(scanner.nextLine().trim()) - 1;
+        } catch (NumberFormatException e) {
+            view.printError("올바른 번호를 입력해 주세요.");
+            return;
+        }
+        if (index == -1) return;
+        if (index < 0 || index >= samples.size()) {
+            view.printError("올바른 번호를 입력해 주세요.");
+            return;
+        }
+        Sample selected = samples.get(index);
+        String sampleId = selected.getSampleId();
 
         view.printPrompt("고객명 > ");
         String customerName = scanner.nextLine();
@@ -65,7 +79,7 @@ public class OrderController {
             return;
         }
 
-        view.printOrderConfirm(sampleOpt.get(), customerName, quantity);
+        view.printOrderConfirm(selected, customerName, quantity);
         String confirm = scanner.nextLine().trim();
         if (!confirm.equalsIgnoreCase("Y")) {
             view.printError("주문이 취소되었습니다.");
@@ -112,8 +126,7 @@ public class OrderController {
         Sample sample = sampleOpt.get();
 
         if (sample.getStock() >= order.getQuantity()) {
-            sample.deductStock(order.getQuantity());
-            sampleRepo.update(sample);
+            // 재고 차감은 출고(ReleaseController) 시점에 수행
             order.setStatus(OrderStatus.CONFIRMED);
             orderRepo.update(order);
             view.printApprovalDetail(sample, order, 0, 0, 0);
@@ -121,7 +134,7 @@ public class OrderController {
             // 표시용 수치를 update 전에 미리 계산
             int requiredQty   = order.getQuantity() - sample.getStock();
             int actualProdQty = (int) Math.ceil(requiredQty / (sample.getYield() * 0.9));
-            int totalProdTime = sample.getAvgProductionTime() * actualProdQty;
+            int totalProdTime = sample.getAvgProductionTime(); // 단위당 초수
 
             order.setStatus(OrderStatus.PRODUCING);
             orderRepo.update(order);

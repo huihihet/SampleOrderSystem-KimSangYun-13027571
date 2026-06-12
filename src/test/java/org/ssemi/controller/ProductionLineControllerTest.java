@@ -107,7 +107,7 @@ class ProductionLineControllerTest {
     }
 
     @Test
-    void registerProductionQueue_총생산시간_평균생산시간_곱하기_실생산량() {
+    void registerProductionQueue_총생산시간_단위당_초수_equals_avgProductionTime() {
         Sample sample = new Sample("S-001", "실리콘 웨이퍼", 30, 1.0, 90);
         sampleRepo.save(sample);
         Order order = new Order("ORD-001", "S-001", "홍길동", 100, OrderStatus.PRODUCING);
@@ -116,8 +116,8 @@ class ProductionLineControllerTest {
         ctrl("").registerProductionQueue(order, sample);
 
         ProductionQueueItem item = queueRepo.findAll().get(0);
-        // actualProdQty = 12, totalProdTime = 30 * 12 = 360
-        assertEquals(30 * item.getActualProductionQuantity(), item.getTotalProductionTime());
+        // totalProductionTime = 단위당 초수 = avgProductionTime
+        assertEquals(30, item.getTotalProductionTime());
     }
 
     @Test

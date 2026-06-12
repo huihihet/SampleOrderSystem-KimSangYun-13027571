@@ -69,7 +69,7 @@ class OrderControllerTest {
         sampleRepo.save(new Sample("S-001", "실리콘 웨이퍼", 30, 0.92, 200));
         outContent.reset();
 
-        ctrl("S-001\n홍길동\n100\nY\n").placeOrder();
+        ctrl("1\n홍길동\n100\nY\n").placeOrder();
 
         assertTrue(output().contains("[성공]"));
         assertEquals(1, orderRepo.findAll().size());
@@ -77,16 +77,22 @@ class OrderControllerTest {
     }
 
     @Test
-    void placeOrder_존재하지않는_sampleId_오류_저장안됨() {
-        ctrl("INVALID\n").placeOrder();
+    void placeOrder_번호_파싱_실패_오류_저장안됨() {
+        sampleRepo.save(new Sample("S-001", "실리콘 웨이퍼", 30, 0.92, 200));
+        outContent.reset();
+
+        ctrl("abc\n").placeOrder();
 
         assertTrue(output().contains("[오류]"));
         assertTrue(orderRepo.findAll().isEmpty());
     }
 
     @Test
-    void placeOrder_빈_sampleId_입력_오류_저장안됨() {
-        ctrl("\n").placeOrder();
+    void placeOrder_번호_범위_초과_오류_저장안됨() {
+        sampleRepo.save(new Sample("S-001", "실리콘 웨이퍼", 30, 0.92, 200));
+        outContent.reset();
+
+        ctrl("99\n").placeOrder();
 
         assertTrue(output().contains("[오류]"));
         assertTrue(orderRepo.findAll().isEmpty());
@@ -97,7 +103,7 @@ class OrderControllerTest {
         sampleRepo.save(new Sample("S-001", "실리콘 웨이퍼", 30, 0.92, 200));
         outContent.reset();
 
-        ctrl("S-001\n\n").placeOrder();
+        ctrl("1\n\n").placeOrder();
 
         assertTrue(output().contains("[오류]"));
         assertTrue(orderRepo.findAll().isEmpty());
@@ -108,7 +114,7 @@ class OrderControllerTest {
         sampleRepo.save(new Sample("S-001", "실리콘 웨이퍼", 30, 0.92, 200));
         outContent.reset();
 
-        ctrl("S-001\n홍길동\nabc\n").placeOrder();
+        ctrl("1\n홍길동\nabc\n").placeOrder();
 
         assertTrue(output().contains("[오류]"));
         assertTrue(orderRepo.findAll().isEmpty());
@@ -119,7 +125,7 @@ class OrderControllerTest {
         sampleRepo.save(new Sample("S-001", "실리콘 웨이퍼", 30, 0.92, 200));
         outContent.reset();
 
-        ctrl("S-001\n홍길동\n0\n").placeOrder();
+        ctrl("1\n홍길동\n0\n").placeOrder();
 
         assertTrue(output().contains("[오류]"));
         assertTrue(orderRepo.findAll().isEmpty());
@@ -130,7 +136,7 @@ class OrderControllerTest {
         sampleRepo.save(new Sample("S-001", "실리콘 웨이퍼", 30, 0.92, 200));
         outContent.reset();
 
-        ctrl("S-001\n홍길동\n50\nY\n").placeOrder();
+        ctrl("1\n홍길동\n50\nY\n").placeOrder();
 
         String today = LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE);
         String expected = "ORD-" + today + "-0001";
@@ -146,7 +152,7 @@ class OrderControllerTest {
     }
 
     @Test
-    void approveOrder_재고_충분_CONFIRMED_재고차감() {
+    void approveOrder_재고_충분_CONFIRMED_재고_유지() {
         sampleRepo.save(new Sample("S-001", "실리콘 웨이퍼", 30, 0.92, 200));
         orderRepo.save(new Order("ORD-001", "S-001", "홍길동", 100, OrderStatus.RESERVED));
         outContent.reset();
@@ -154,7 +160,8 @@ class OrderControllerTest {
         ctrl("1\n").approveOrder();
 
         assertEquals(OrderStatus.CONFIRMED, orderRepo.findById("ORD-001").get().getStatus());
-        assertEquals(100, sampleRepo.findById("S-001").get().getStock());
+        // 재고 차감은 출고(ReleaseController) 시점에 수행 — 승인 후 재고 불변
+        assertEquals(200, sampleRepo.findById("S-001").get().getStock());
         assertTrue(output().contains("CONFIRMED"));
     }
 
@@ -172,7 +179,7 @@ class OrderControllerTest {
     }
 
     @Test
-    void approveOrder_재고_경계값_재고_equals_수량_CONFIRMED_재고0() {
+    void approveOrder_재고_경계값_재고_equals_수량_CONFIRMED() {
         sampleRepo.save(new Sample("S-001", "실리콘 웨이퍼", 30, 0.92, 100));
         orderRepo.save(new Order("ORD-001", "S-001", "홍길동", 100, OrderStatus.RESERVED));
         outContent.reset();
@@ -180,7 +187,8 @@ class OrderControllerTest {
         ctrl("1\n").approveOrder();
 
         assertEquals(OrderStatus.CONFIRMED, orderRepo.findById("ORD-001").get().getStatus());
-        assertEquals(0, sampleRepo.findById("S-001").get().getStock());
+        // 재고 차감은 출고 시점에 수행 — 승인 후 재고 불변
+        assertEquals(100, sampleRepo.findById("S-001").get().getStock());
     }
 
     @Test

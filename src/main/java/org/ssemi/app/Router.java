@@ -63,6 +63,7 @@ public class Router {
     }
 
     private void renderMainMenu() {
+        productionLineController.checkAndAutoComplete(); // 생산 완료 자동 처리
         int  totalSamples    = monitoringController.getSampleCount();
         long totalStock      = monitoringController.getTotalStock();
         long totalOrders     = monitoringController.getOrderCount();
@@ -76,7 +77,7 @@ public class Router {
             case 2 -> orderController.placeOrder();
             case 3 -> orderController.handleSubMenu();
             case 4 -> showMonitoringLive();
-            case 5 -> productionLineController.handleSubMenu();
+            case 5 -> productionLineController.showQueue();
             case 6 -> releaseController.processRelease();
             case 0 -> { return false; }
             default -> mainView.printError("올바른 번호를 입력해 주세요.");

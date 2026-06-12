@@ -108,7 +108,8 @@ class RouterTest {
         boolean processReleaseCalled = false;
 
         SpyReleaseController(Path dir) {
-            super(new JsonOrderRepository(dir.resolve("orders.json")),
+            super(new JsonSampleRepository(dir.resolve("samples.json")),
+                  new JsonOrderRepository(dir.resolve("orders.json")),
                   new ReleaseView(),
                   new Scanner(new StringReader("")));
         }
@@ -118,7 +119,7 @@ class RouterTest {
     }
 
     private static class SpyProductionLineController extends ProductionLineController {
-        boolean handleSubMenuCalled = false;
+        boolean showQueueCalled = false;
 
         SpyProductionLineController(Path dir) {
             super(new JsonSampleRepository(dir.resolve("samples.json")),
@@ -129,7 +130,7 @@ class RouterTest {
         }
 
         @Override
-        public void handleSubMenu()     { handleSubMenuCalled = true; }
+        public void showQueue()           { showQueueCalled = true; }
 
         @Override
         public int getQueueWaitingCount() { return 2; }
@@ -205,7 +206,7 @@ class RouterTest {
     }
 
     @Test
-    void route_5_productionLineController_handleSubMenu_호출() {
+    void route_5_productionLineController_showQueue_호출() {
         SpySampleController sampleCtrl = new SpySampleController(tempDir);
         SpyProductionLineController prodCtrl = new SpyProductionLineController(tempDir);
         SpyOrderController orderCtrl = new SpyOrderController(tempDir, prodCtrl);
@@ -215,7 +216,7 @@ class RouterTest {
         Router router = buildRouter(sampleCtrl, orderCtrl, monitorCtrl, releaseCtrl, prodCtrl);
         router.route(5);
 
-        assertTrue(prodCtrl.handleSubMenuCalled);
+        assertTrue(prodCtrl.showQueueCalled);
     }
 
     @Test

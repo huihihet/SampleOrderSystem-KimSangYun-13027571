@@ -58,8 +58,8 @@ class OrderFlowIntegrationTest {
         return new OrderController(sr, or, plc, new OrderView(), sc);
     }
 
-    private ReleaseController releaseCtrl(JsonOrderRepository or, Scanner sc) {
-        return new ReleaseController(or, new ReleaseView(), sc);
+    private ReleaseController releaseCtrl(JsonSampleRepository sr, JsonOrderRepository or, Scanner sc) {
+        return new ReleaseController(sr, or, new ReleaseView(), sc);
     }
 
     private MonitoringController monitorCtrl(JsonSampleRepository sr, JsonOrderRepository or) {
@@ -76,11 +76,11 @@ class OrderFlowIntegrationTest {
 
         sr.save(new Sample("S-001", "실리콘 웨이퍼", 30, 0.92, 200));
 
-        // placeOrder: 3라인+Y확인, approveOrder: 1라인, processRelease: 1라인
-        Scanner sc = new Scanner(new StringReader("S-001\n고객A\n50\nY\n1\n1\n"));
+        // placeOrder: 번호선택+3라인+Y확인, approveOrder: 1라인, processRelease: 1라인
+        Scanner sc = new Scanner(new StringReader("1\n고객A\n50\nY\n1\n1\n"));
         ProductionLineController plc = prodLineCtrl(sr, or, qr, sc);
         OrderController oc = orderCtrl(sr, or, plc, sc);
-        ReleaseController rc = releaseCtrl(or, sc);
+        ReleaseController rc = releaseCtrl(sr, or, sc);
 
         oc.placeOrder();
         oc.approveOrder();
@@ -107,11 +107,11 @@ class OrderFlowIntegrationTest {
 
         sr.save(new Sample("S-001", "실리콘 웨이퍼", 30, 0.90, 5));
 
-        // placeOrder: 3라인+Y확인, approveOrder: 1라인, completeProduction: 1라인, processRelease: 1라인
-        Scanner sc = new Scanner(new StringReader("S-001\n고객A\n50\nY\n1\n1\n1\n"));
+        // placeOrder: 번호선택+3라인+Y확인, approveOrder: 1라인, completeProduction: 1라인, processRelease: 1라인
+        Scanner sc = new Scanner(new StringReader("1\n고객A\n50\nY\n1\n1\n1\n"));
         ProductionLineController plc = prodLineCtrl(sr, or, qr, sc);
         OrderController oc = orderCtrl(sr, or, plc, sc);
-        ReleaseController rc = releaseCtrl(or, sc);
+        ReleaseController rc = releaseCtrl(sr, or, sc);
 
         oc.placeOrder();
         oc.approveOrder();
@@ -146,8 +146,8 @@ class OrderFlowIntegrationTest {
 
         sr.save(new Sample("S-001", "실리콘 웨이퍼", 30, 0.92, 100));
 
-        // placeOrder: 3라인+Y확인, rejectOrder: 1라인
-        Scanner sc = new Scanner(new StringReader("S-001\n고객A\n50\nY\n1\n"));
+        // placeOrder: 번호선택+3라인+Y확인, rejectOrder: 1라인
+        Scanner sc = new Scanner(new StringReader("1\n고객A\n50\nY\n1\n"));
         ProductionLineController plc = prodLineCtrl(sr, or, qr, sc);
         OrderController oc = orderCtrl(sr, or, plc, sc);
 

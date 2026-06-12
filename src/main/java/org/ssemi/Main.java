@@ -58,7 +58,7 @@ public class Main {
         ProductionLineController prodLineCtrl = new ProductionLineController(sampleRepo, orderRepo, queueRepo, prodView, scanner);
         OrderController          orderCtrl    = new OrderController(sampleRepo, orderRepo, prodLineCtrl, orderView, scanner);
         MonitoringController     monitorCtrl  = new MonitoringController(sampleRepo, orderRepo, monitorView);
-        ReleaseController        releaseCtrl  = new ReleaseController(orderRepo, releaseView, scanner);
+        ReleaseController        releaseCtrl  = new ReleaseController(sampleRepo, orderRepo, releaseView, scanner);
 
         new Router(sampleCtrl, orderCtrl, monitorCtrl, releaseCtrl, prodLineCtrl, mainView, scanner).run();
     }
@@ -67,11 +67,13 @@ public class Main {
         String javaExe = ProcessHandle.current().info().command().orElse("java");
         String classpath = System.getProperty("java.class.path");
 
-        // 임시 배치 파일에 chcp 65001 선행 실행 + java 실행 명령 기록
+        // deleteOnExit() 사용 금지: Gradle JVM이 즉시 종료되면서 배치 파일이
+        // 새 CMD 창 실행 전에 삭제되므로, 직접 정리하지 않고 OS 임시 폴더에 위탁
         Path bat = Files.createTempFile("ssemi-", ".bat");
-        bat.toFile().deleteOnExit();
 
+        // 배치 파일: chcp 65001로 UTF-8 코드 페이지 설정 후 java 실행
         String script = "@echo off\r\n"
+            + "title S-Semi 생산주문관리시스템\r\n"
             + "chcp 65001 >nul\r\n"
             + "\"" + javaExe + "\""
             + " -Dfile.encoding=UTF-8"
@@ -81,11 +83,12 @@ public class Main {
             + " -cp \"" + classpath + "\""
             + " org.ssemi.Main\r\n";
 
-        // 한글 경로 포함 배치 파일은 시스템 기본 인코딩(CP949)으로 저장
+        // 배치 파일은 시스템 기본 인코딩(CP949)으로 저장해야 cmd.exe가 한글 경로를 인식
         Files.write(bat, script.getBytes(Charset.defaultCharset()));
 
-        new ProcessBuilder("cmd.exe", "/c", "start", "S-Semi 생산주문관리시스템",
-            "cmd.exe", "/k", bat.toAbsolutePath().toString())
+        // start "" "path.bat" : 빈 타이틀로 새 CMD 창에서 배치 파일 실행
+        // /k 대신 start가 .bat 파일을 직접 실행 — ProcessBuilder 이중 인용 문제 우회
+        new ProcessBuilder("cmd.exe", "/c", "start", "", bat.toAbsolutePath().toString())
             .start();
     }
 }
