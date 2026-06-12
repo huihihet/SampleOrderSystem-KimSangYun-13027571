@@ -6,7 +6,16 @@ import java.util.List;
 
 public class SampleView {
 
+    public void clearScreen() {
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
+    }
+
     public void printMenu() {
+        clearScreen();
+        System.out.println("=".repeat(63));
+        System.out.println("  시료 관리");
+        System.out.println("=".repeat(63));
         System.out.println("[1] 시료 등록");
         System.out.println("[2] 목록 조회");
         System.out.println("[3] 이름 검색");
@@ -42,5 +51,10 @@ public class SampleView {
 
     public void printEmpty() {
         System.out.println("등록된 시료가 없습니다.");
+    }
+
+    public void printPause() {
+        System.out.println();
+        System.out.print("  [ Enter 키로 계속 ]  ");
     }
 }

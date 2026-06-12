@@ -39,6 +39,19 @@ public class MonitoringController {
 
         String timestamp = LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss"));
         view.render(statusCounts, sampleStatusList, timestamp);
+        view.printExitHint();
+    }
+
+    public int getOrderCount() {
+        return orderRepo.findAll().size();
+    }
+
+    public int getSampleCount() {
+        return sampleRepo.findAll().size();
+    }
+
+    public long getTotalStock() {
+        return sampleRepo.findAll().stream().mapToLong(Sample::getStock).sum();
     }
 
     public List<SampleStatus> getSampleSummary() {

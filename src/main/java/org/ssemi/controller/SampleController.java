@@ -97,4 +97,31 @@ public class SampleController {
             view.printSampleList(result);
         }
     }
+
+    public void handleSubMenu() {
+        while (true) {
+            view.printMenu();
+            int choice = readMenuChoice();
+            switch (choice) {
+                case 1 -> { register();     pause(); }
+                case 2 -> { listAll();      pause(); }
+                case 3 -> { searchByName(); pause(); }
+                case 0 -> { return; }
+                default -> view.printError("올바른 번호를 입력해 주세요.");
+            }
+        }
+    }
+
+    private void pause() {
+        view.printPause();
+        scanner.nextLine();
+    }
+
+    private int readMenuChoice() {
+        try {
+            return Integer.parseInt(scanner.nextLine().trim());
+        } catch (NumberFormatException e) {
+            return -1;
+        }
+    }
 }

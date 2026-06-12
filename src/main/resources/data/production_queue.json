@@ -1,1 +1,12 @@
-[]
+[
+  {
+    "queueId": "Q-001",
+    "orderId": "ORD-20260612-0001",
+    "sampleId": "S-003",
+    "orderQuantity": 200,
+    "requiredQuantity": 200,
+    "actualProductionQuantity": 245,
+    "totalProductionTime": 58800,
+    "enqueuedAt": "2026-06-12T15:06:01.964670500"
+  }
+]

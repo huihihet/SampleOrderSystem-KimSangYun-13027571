@@ -47,6 +47,10 @@ test {
     finalizedBy jacocoTestReport
 }
 
+run {
+    standardInput = System.in
+}
+
 jacocoTestReport {
     dependsOn test
     reports {

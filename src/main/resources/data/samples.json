@@ -1,1 +1,37 @@
-[]
+[
+  {
+    "sampleId": "S-001",
+    "name": "GaN-HEMT-A",
+    "avgProductionTime": 120,
+    "yield": 0.85,
+    "stock": 200
+  },
+  {
+    "sampleId": "S-002",
+    "name": "SiC-MOSFET-B",
+    "avgProductionTime": 180,
+    "yield": 0.72,
+    "stock": 8
+  },
+  {
+    "sampleId": "S-003",
+    "name": "InP-HBT-C",
+    "avgProductionTime": 240,
+    "yield": 0.91,
+    "stock": 0
+  },
+  {
+    "sampleId": "S-004",
+    "name": "Si-BJT-D",
+    "avgProductionTime": 60,
+    "yield": 0.95,
+    "stock": 500
+  },
+  {
+    "sampleId": "S-005",
+    "name": "GaAs-pHEMT-E",
+    "avgProductionTime": 300,
+    "yield": 0.68,
+    "stock": 45
+  }
+]

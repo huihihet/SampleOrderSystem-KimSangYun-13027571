@@ -13,8 +13,10 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Scanner;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ProductionLineController {
 
@@ -37,13 +39,32 @@ public class ProductionLineController {
     }
 
     public void showQueue() {
+        renderQueue(); // 첫 렌더는 호출 스레드에서 즉시 실행
+        AtomicBoolean active = new AtomicBoolean(true);
+        Thread t = new Thread(() -> {
+            while (active.get()) {
+                try { Thread.sleep(3000); } catch (InterruptedException e) { break; }
+                if (active.get()) renderQueue();
+            }
+        }, "prodline-refresh");
+        t.setDaemon(true);
+        t.start();
+        try { scanner.nextLine(); } catch (NoSuchElementException ignored) {}
+        active.set(false);
+        t.interrupt();
+        try { t.join(300); } catch (InterruptedException ignored) {}
+    }
+
+    private void renderQueue() {
         List<ProductionQueueItem> items = queueRepo.findAll();
         if (items.isEmpty()) {
             view.printEmpty();
+            view.printExitHint();
             return;
         }
         Map<String, String> sampleNames = buildSampleNames(items);
         view.printQueueList(items, sampleNames);
+        view.printExitHint();
     }
 
     public void completeProduction() {
@@ -88,6 +109,36 @@ public class ProductionLineController {
 
         view.printSuccess("생산 완료: " + sample.getName()
             + " " + item.getActualProductionQuantity() + " ea → 재고 반영, 주문 CONFIRMED");
+    }
+
+    public void handleSubMenu() {
+        while (true) {
+            view.printMenu();
+            int choice = readMenuChoice();
+            switch (choice) {
+                case 1 -> showQueue();
+                case 2 -> { completeProduction(); pause(); }
+                case 0 -> { return; }
+                default -> view.printError("올바른 번호를 입력해 주세요.");
+            }
+        }
+    }
+
+    private void pause() {
+        view.printPause();
+        try { scanner.nextLine(); } catch (NoSuchElementException ignored) {}
+    }
+
+    public int getQueueWaitingCount() {
+        return queueRepo.findAll().size();
+    }
+
+    private int readMenuChoice() {
+        try {
+            return Integer.parseInt(scanner.nextLine().trim());
+        } catch (NumberFormatException e) {
+            return -1;
+        }
     }
 
     // OrderController에서 재고 부족 승인 시 호출

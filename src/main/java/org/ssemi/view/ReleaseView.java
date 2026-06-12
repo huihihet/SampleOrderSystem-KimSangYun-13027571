@@ -6,11 +6,20 @@ import java.util.List;
 
 public class ReleaseView {
 
+    public void clearScreen() {
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
+    }
+
     public void printPrompt(String prompt) {
         System.out.print(prompt);
     }
 
     public void printOrderList(List<Order> orders) {
+        clearScreen();
+        System.out.println("=".repeat(63));
+        System.out.println("  출고 처리");
+        System.out.println("=".repeat(63));
         System.out.printf("%-5s %-22s %-9s %-18s %-8s %s%n",
             "번호", "주문번호", "시료ID", "고객명", "수량", "상태");
         System.out.println("-".repeat(72));

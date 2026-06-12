@@ -299,8 +299,8 @@ REJECTED   → 주문 거절 (모니터링 제외)
 
 | 이식 대상 | 변경 사항 |
 |---------|---------|
-| `SampleGenerator` | `src/test/java/org/ssemi/fixture/SampleFixture.java`로 이식, `GeneratorConfig` 제거 후 간소화, ID 타입 Long→String (`"S001"` 포맷) |
-| `OrderGenerator` | `src/test/java/org/ssemi/fixture/OrderFixture.java`로 이식, `GeneratorConfig` 제거 후 간소화, ID 타입 Long→String (`"O001"` 포맷) |
+| `SampleGenerator` | `src/test/java/org/ssemi/fixture/SampleFixture.java`로 이식, `GeneratorConfig` 제거 후 간소화, ID 타입 Long→String (`"S-001"` 포맷) |
+| `OrderGenerator` | `src/test/java/org/ssemi/fixture/OrderFixture.java`로 이식, `GeneratorConfig` 제거 후 간소화, ID 타입 Long→String (`"ORD-YYYYMMDD-NNNN"` 포맷) |
 | `GsonFileWriter` | **제거** — `JsonFileUtil`로 통합 |
 | `GeneratorConfig`, `DataGeneratorFacade` | **제거** — 테스트 픽스처에 불필요 |
 | `GeneratorView` | **제거** — 테스트 코드에 뷰 불필요 |

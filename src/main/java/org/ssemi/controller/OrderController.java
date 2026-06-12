@@ -65,6 +65,13 @@ public class OrderController {
             return;
         }
 
+        view.printOrderConfirm(sampleOpt.get(), customerName, quantity);
+        String confirm = scanner.nextLine().trim();
+        if (!confirm.equalsIgnoreCase("Y")) {
+            view.printError("주문이 취소되었습니다.");
+            return;
+        }
+
         String orderId = "ORD-"
             + LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE)
             + "-" + String.format("%04d", orderRepo.findAll().size() + 1);
@@ -151,6 +158,32 @@ public class OrderController {
         order.setStatus(OrderStatus.REJECTED);
         orderRepo.update(order);
         view.printSuccess("주문이 거절되었습니다: " + order.getOrderId());
+    }
+
+    public void handleSubMenu() {
+        while (true) {
+            view.printApprovalMenu();
+            int choice = readMenuChoice();
+            switch (choice) {
+                case 1 -> { approveOrder(); pause(); }
+                case 2 -> { rejectOrder();  pause(); }
+                case 0 -> { return; }
+                default -> view.printError("올바른 번호를 입력해 주세요.");
+            }
+        }
+    }
+
+    private void pause() {
+        view.printPause();
+        scanner.nextLine();
+    }
+
+    private int readMenuChoice() {
+        try {
+            return Integer.parseInt(scanner.nextLine().trim());
+        } catch (NumberFormatException e) {
+            return -1;
+        }
     }
 
     private Map<String, String> buildSampleNames(List<Order> orders) {

@@ -59,6 +59,11 @@ public class MonitoringView {
         }
     }
 
+    public void printExitHint() {
+        System.out.println();
+        System.out.println("  [ Enter 키를 누르면 메인 메뉴로 돌아갑니다 / 3초마다 자동 갱신 ]");
+    }
+
     private String colorize(String stockLevel) {
         return switch (stockLevel) {
             case "부족" -> ANSI_YELLOW + "부족" + ANSI_RESET;

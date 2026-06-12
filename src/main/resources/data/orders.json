@@ -1,1 +1,9 @@
-[]
+[
+  {
+    "orderId": "ORD-20260612-0001",
+    "sampleId": "S-003",
+    "customerName": "파운딀",
+    "quantity": 200,
+    "status": "PRODUCING"
+  }
+]

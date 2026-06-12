@@ -69,7 +69,7 @@ class OrderControllerTest {
         sampleRepo.save(new Sample("S-001", "실리콘 웨이퍼", 30, 0.92, 200));
         outContent.reset();
 
-        ctrl("S-001\n홍길동\n100\n").placeOrder();
+        ctrl("S-001\n홍길동\n100\nY\n").placeOrder();
 
         assertTrue(output().contains("[성공]"));
         assertEquals(1, orderRepo.findAll().size());
@@ -130,7 +130,7 @@ class OrderControllerTest {
         sampleRepo.save(new Sample("S-001", "실리콘 웨이퍼", 30, 0.92, 200));
         outContent.reset();
 
-        ctrl("S-001\n홍길동\n50\n").placeOrder();
+        ctrl("S-001\n홍길동\n50\nY\n").placeOrder();
 
         String today = LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE);
         String expected = "ORD-" + today + "-0001";

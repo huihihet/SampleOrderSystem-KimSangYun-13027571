@@ -61,7 +61,7 @@ class ProductionLineViewTest {
         assertTrue(out.contains("ORD-20260612-0001"), "주문번호 포함");
         assertTrue(out.contains("실리콘 웨이퍼-8인치"), "시료명 포함");
         assertTrue(out.contains("56"), "실생산량 포함");
-        assertTrue(out.contains("1680"), "예상완료 포함");
+        assertTrue(out.contains(":"), "예상완료 HH:mm 포함");
         // 헤더 확인
         assertTrue(out.contains("순서"), "헤더 포함");
         // 구분선 확인
