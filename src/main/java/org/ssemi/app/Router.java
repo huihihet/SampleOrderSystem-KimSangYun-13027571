@@ -39,17 +39,35 @@ public class Router {
 
     public void run() {
         while (true) {
-            int  totalSamples    = monitoringController.getSampleCount();
-            long totalStock      = monitoringController.getTotalStock();
-            long totalOrders     = monitoringController.getOrderCount();
-            long prodLineWaiting = productionLineController.getQueueWaitingCount();
+            renderMainMenu();
 
-            mainView.printMainMenu(totalSamples, totalStock, totalOrders, prodLineWaiting);
+            // 입력 대기 중 1초마다 시간·통계 갱신
+            AtomicBoolean active = new AtomicBoolean(true);
+            Thread t = new Thread(() -> {
+                while (active.get()) {
+                    try { Thread.sleep(1000); } catch (InterruptedException e) { break; }
+                    if (active.get()) renderMainMenu();
+                }
+            }, "main-refresh");
+            t.setDaemon(true);
+            t.start();
 
             int choice = readMenuChoice();
+            active.set(false);
+            t.interrupt();
+            try { t.join(200); } catch (InterruptedException ignored) {}
+
             if (!route(choice)) break;
         }
         mainView.printGoodbye();
+    }
+
+    private void renderMainMenu() {
+        int  totalSamples    = monitoringController.getSampleCount();
+        long totalStock      = monitoringController.getTotalStock();
+        long totalOrders     = monitoringController.getOrderCount();
+        long prodLineWaiting = productionLineController.getQueueWaitingCount();
+        mainView.printMainMenu(totalSamples, totalStock, totalOrders, prodLineWaiting);
     }
 
     public boolean route(int menu) {

@@ -21,7 +21,9 @@ import org.ssemi.view.SampleView;
 
 import java.io.FileOutputStream;
 import java.io.PrintStream;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Scanner;
 
@@ -64,16 +66,26 @@ public class Main {
     private static void spawnNewWindow() throws Exception {
         String javaExe = ProcessHandle.current().info().command().orElse("java");
         String classpath = System.getProperty("java.class.path");
-        new ProcessBuilder(
-            "cmd.exe", "/c", "start", "S-Semi 생산주문관리시스템",
-            "cmd.exe", "/k",
-            javaExe,
-            "-Dfile.encoding=UTF-8",
-            "-Dstdout.encoding=UTF-8",
-            "-Dstderr.encoding=UTF-8",
-            "-Dssemi.child=true",
-            "-cp", classpath,
-            "org.ssemi.Main"
-        ).start();
+
+        // 임시 배치 파일에 chcp 65001 선행 실행 + java 실행 명령 기록
+        Path bat = Files.createTempFile("ssemi-", ".bat");
+        bat.toFile().deleteOnExit();
+
+        String script = "@echo off\r\n"
+            + "chcp 65001 >nul\r\n"
+            + "\"" + javaExe + "\""
+            + " -Dfile.encoding=UTF-8"
+            + " -Dstdout.encoding=UTF-8"
+            + " -Dstderr.encoding=UTF-8"
+            + " -Dssemi.child=true"
+            + " -cp \"" + classpath + "\""
+            + " org.ssemi.Main\r\n";
+
+        // 한글 경로 포함 배치 파일은 시스템 기본 인코딩(CP949)으로 저장
+        Files.write(bat, script.getBytes(Charset.defaultCharset()));
+
+        new ProcessBuilder("cmd.exe", "/c", "start", "S-Semi 생산주문관리시스템",
+            "cmd.exe", "/k", bat.toAbsolutePath().toString())
+            .start();
     }
 }
