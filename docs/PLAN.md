@@ -731,8 +731,8 @@ List<Order> generate(List<String> sampleIds, int count, long seed)
 |-----------|---------|-----------|
 | `SampleFixtureTest` | generate 결과 | ID 포맷, 개수 일치, 동일 seed 재현성 |
 | `OrderFixtureTest` | generate 결과 | ID 포맷, sampleId 참조 무결성 |
-| `RouterTest` | route 분기 | 5개 메뉴 각각 올바른 Controller 호출, menu=0 종료 |
-| `MainViewTest` | 출력 포맷 | 시료 요약 포함, 5개 메뉴 항목 |
+| `RouterTest` | route 분기 | 6개 메뉴 각각 올바른 Controller 호출, menu=0 종료 |
+| `MainViewTest` | 출력 포맷 | 시료 요약 포함, 6개 메뉴 항목 |
 | `OrderFlowIntegrationTest` | 전체 시나리오 | 위 4개 시나리오 |
 
 ### 완료 기준

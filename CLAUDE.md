@@ -93,7 +93,7 @@ jacocoTestReport {
 DataPersistence는 `String`, DataMonitor·DummyDataGenerator는 `Long`을 사용한다.
 본 프로젝트는 **JSON 파일 영속성** 요구사항에 맞춰 **`String`으로 통일**한다.
 
-- `"S001"`, `"O001"`, `"Q001"` 형태의 접두사+순번 포맷 사용
+- `"S-001"`, `"ORD-YYYYMMDD-NNNN"`, `"Q-001"` 형태의 접두사+순번 포맷 사용 (PRD Section 8.1 기준)
 - 이식 시 `Long` → `String` 타입 교체 필수
 
 ### Entity 설계: DataPersistence 기준 (Getter/Setter)
@@ -124,7 +124,7 @@ DataMonitor의 `findBySampleId(String)` 메서드를 추가한다 (Long → Stri
 | `model/repository/InMemorySampleRepository.java` | 사용 안 함 | JSON 구현체로 대체 |
 | `controller/SampleController.java` | `controller/SampleController.java` | ID 타입 Long→String, JSON repo 사용, update/delete 제거 (PRD 범위 외) |
 | `view/SampleView.java` | `view/SampleView.java` | 테이블 포맷 재사용, 메뉴 항목 조정 |
-| `app/Router.java` | `app/Router.java` | 5개 메뉴로 확장, 복수 Controller 주입 |
+| `app/Router.java` | `app/Router.java` | 6개 메뉴로 확장, 복수 Controller 주입 |
 
 ### DataPersistence → 이식 대상
 
