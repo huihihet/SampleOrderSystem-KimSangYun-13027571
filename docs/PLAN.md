@@ -484,7 +484,7 @@ FR-MON-01(상태별 주문 현황), FR-MON-02(시료별 재고 현황), FR-REL-0
 | 클래스 | 출처 | 변경 사항 |
 |--------|------|---------|
 | `MonitoringController` | DataMonitor 이식 | String ID, `InMemoryRepository` → JSON repo, 스레드 루프 제거 |
-| `MonitoringView` | DataMonitor 이식 | 패키지 변경만 |
+| `MonitoringView` | DataMonitor 이식 | 패키지 변경, String sampleId 출력 포맷 수정(`%4d`→`%-8s`), 주문 상태 ANSI 색상 추가, `clearScreen()` 선택 적용 |
 | `ReleaseController` | 신규 | — |
 | `ReleaseView` | 신규 | — |
 
