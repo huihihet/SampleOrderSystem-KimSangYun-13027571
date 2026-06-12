@@ -213,7 +213,7 @@ src/main/java/org/ssemi/
 │   ├── ReleaseView.java                           (신규)
 │   └── ProductionLineView.java                    (신규)
 └── app/
-    └── Router.java                                (ConsoleMVC 이식, 5메뉴로 확장)
+    └── Router.java                                (ConsoleMVC 이식, 6메뉴로 확장)
 
 src/main/resources/data/
 ├── samples.json

@@ -338,7 +338,7 @@ void printEmpty()
 
 **테스트 방식**: ConsoleMVC 패턴 재사용
 - View: `ByteArrayOutputStream`으로 `System.out` 캡처
-- Controller: `@Spy SampleView` + 실제 `JsonSampleRepository` (`@TempDir`)
+- Controller: 실제 `SampleView` + 실제 `JsonSampleRepository` (`@TempDir`) + `ByteArrayOutputStream` 캡처
 
 ### 완료 기준
 
