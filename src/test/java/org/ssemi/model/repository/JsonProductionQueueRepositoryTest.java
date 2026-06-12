@@ -116,4 +116,22 @@ class JsonProductionQueueRepositoryTest {
 
         assertTrue(all.isEmpty());
     }
+
+    @Test
+    void update_producedQuantity_갱신_후_재조회() {
+        ProductionQueueItem item = createItem("Q-001", "ORD-20260612-0001", "S-001");
+        repository.enqueue(item);
+
+        item.setProducedQuantity(10);
+        repository.update(item);
+
+        ProductionQueueItem found = repository.findById("Q-001").get();
+        assertEquals(10, found.getProducedQuantity());
+    }
+
+    @Test
+    void update_존재하지_않는_ID_NoSuchElementException() {
+        ProductionQueueItem ghost = createItem("Q-999", "ORD-X", "S-X");
+        assertThrows(java.util.NoSuchElementException.class, () -> repository.update(ghost));
+    }
 }

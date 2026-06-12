@@ -10,6 +10,7 @@ public class ProductionQueueItem {
     private int actualProductionQuantity;
     private int totalProductionTime;
     private String enqueuedAt;
+    private int producedQuantity;
 
     public ProductionQueueItem() {}
 
@@ -50,4 +51,7 @@ public class ProductionQueueItem {
 
     public String getEnqueuedAt() { return enqueuedAt; }
     public void setEnqueuedAt(String enqueuedAt) { this.enqueuedAt = enqueuedAt; }
+
+    public int getProducedQuantity() { return producedQuantity; }
+    public void setProducedQuantity(int producedQuantity) { this.producedQuantity = producedQuantity; }
 }

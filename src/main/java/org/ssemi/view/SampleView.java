@@ -28,15 +28,19 @@ public class SampleView {
     }
 
     public void printSampleList(List<Sample> samples) {
-        System.out.printf("%-10s %-26s %-14s %-8s %s%n",
-            "ID", "시료명", "평균생산시간", "수율", "현재재고");
+        System.out.println(
+            ViewUtil.padRight("ID", 10) +
+            ViewUtil.padRight("시료명", 22) +
+            ViewUtil.padRight("평균생산시간", 14) +
+            ViewUtil.padRight("수율", 8) +
+            "현재재고");
         System.out.println("-".repeat(64));
         for (Sample s : samples) {
-            System.out.printf("%-10s %-26s %-14s %-8s %s%n",
-                s.getSampleId(),
-                s.getName(),
-                s.getAvgProductionTime() + " sec/ea",
-                String.format("%.2f", s.getYield()),
+            System.out.println(
+                ViewUtil.padRight(s.getSampleId(), 10) +
+                ViewUtil.padRight(s.getName(), 22) +
+                ViewUtil.padRight(s.getAvgProductionTime() + " sec/ea", 14) +
+                ViewUtil.padRight(String.format("%.2f", s.getYield()), 8) +
                 s.getStock() + " ea");
         }
     }

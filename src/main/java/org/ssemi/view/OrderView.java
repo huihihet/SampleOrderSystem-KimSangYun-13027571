@@ -35,12 +35,17 @@ public class OrderView {
 
     public void printSampleCatalog(List<Sample> samples) {
         clearScreen();
-        System.out.println("=".repeat(63));
+        System.out.println("=".repeat(70));
         System.out.println("  시료 주문");
-        System.out.println("=".repeat(63));
-        System.out.printf("  %-4s %-10s %-20s %-10s %-6s %s%n",
-            "번호", "ID", "시료명", "생산시간", "수율", "현재 재고");
-        System.out.println("  " + "-".repeat(61));
+        System.out.println("=".repeat(70));
+        System.out.println("  " +
+            ViewUtil.padRight("번호", 6) +
+            ViewUtil.padRight("ID", 10) +
+            ViewUtil.padRight("시료명", 22) +
+            ViewUtil.padRight("생산시간", 12) +
+            ViewUtil.padRight("수율", 7) +
+            "현재 재고");
+        System.out.println("  " + "-".repeat(62));
         for (int i = 0; i < samples.size(); i++) {
             Sample s = samples.get(i);
             String stockStr = s.getStock() == 0
@@ -48,15 +53,15 @@ public class OrderView {
                 : s.getStock() < 50
                     ? ORANGE + s.getStock() + " ea" + RESET
                     : s.getStock() + " ea";
-            System.out.printf("  %-4d %-10s %-20s %-10s %-6s %s%n",
-                i + 1,
-                s.getSampleId(),
-                s.getName(),
-                s.getAvgProductionTime() + " sec/ea",
-                String.format("%.0f%%", s.getYield() * 100),
+            System.out.println("  " +
+                ViewUtil.padRight(String.valueOf(i + 1), 6) +
+                ViewUtil.padRight(s.getSampleId(), 10) +
+                ViewUtil.padRight(s.getName(), 22) +
+                ViewUtil.padRight(s.getAvgProductionTime() + " sec/ea", 12) +
+                ViewUtil.padRight(String.format("%.0f%%", s.getYield() * 100), 7) +
                 stockStr);
         }
-        System.out.println("  " + "-".repeat(61));
+        System.out.println("  " + "-".repeat(62));
         System.out.println();
     }
 
@@ -65,18 +70,23 @@ public class OrderView {
     }
 
     public void printOrderList(List<Order> orders, Map<String, String> sampleNames) {
-        System.out.printf("%-6s %-22s %-20s %-12s %-8s %s%n",
-            "번호", "주문번호", "시료명", "고객명", "수량", "상태");
+        System.out.println(
+            ViewUtil.padRight("번호", 5) +
+            ViewUtil.padRight("주문번호", 22) +
+            ViewUtil.padRight("시료명", 22) +
+            ViewUtil.padRight("고객명", 16) +
+            ViewUtil.padRight("수량", 9) +
+            "상태");
         System.out.println(LINE);
         for (int i = 0; i < orders.size(); i++) {
             Order o = orders.get(i);
             String sampleName = sampleNames.getOrDefault(o.getSampleId(), o.getSampleId());
-            System.out.printf("%-6d %-22s %-20s %-12s %-8s %s%n",
-                i + 1,
-                o.getOrderId(),
-                sampleName,
-                o.getCustomerName(),
-                o.getQuantity() + " ea",
+            System.out.println(
+                ViewUtil.padRight(String.valueOf(i + 1), 5) +
+                ViewUtil.padRight(o.getOrderId(), 22) +
+                ViewUtil.padRight(sampleName, 22) +
+                ViewUtil.padRight(o.getCustomerName(), 16) +
+                ViewUtil.padRight(o.getQuantity() + " ea", 9) +
                 colorStatus(o.getStatus()));
         }
         System.out.println(LINE);

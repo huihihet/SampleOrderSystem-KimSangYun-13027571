@@ -10,6 +10,7 @@ import org.ssemi.model.repository.SampleRepository;
 import org.ssemi.view.ProductionLineView;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,24 +69,44 @@ public class ProductionLineController {
         view.printExitHint();
     }
 
-    // 생산 시간이 지난 항목을 자동 완료: 재고 반영 + 주문 CONFIRMED + 큐 제거
+    // FIFO: 단위가 완료될 때마다 재고 증가. 전체 완료 시 주문 CONFIRMED + 큐 제거.
     public void checkAndAutoComplete() {
+        ensureFirstItemActive();
         LocalDateTime now = LocalDateTime.now();
         for (ProductionQueueItem item : List.copyOf(queueRepo.findAll())) {
-            // totalProductionTime = 단위당 초수, 전체 완료 = 단위당 초수 × 실생산량
-            long totalSecs = (long) item.getTotalProductionTime() * item.getActualProductionQuantity();
-            LocalDateTime completionTime = LocalDateTime.parse(item.getEnqueuedAt())
-                .plusSeconds(totalSecs);
-            if (!now.isBefore(completionTime)) {
-                sampleRepo.findById(item.getSampleId()).ifPresent(sample -> {
-                    sample.addStock(item.getActualProductionQuantity());
-                    sampleRepo.update(sample);
-                });
+            int secsEach = item.getTotalProductionTime();
+            int totalQty = item.getActualProductionQuantity();
+            if (secsEach <= 0 || totalQty <= 0) continue;
+
+            LocalDateTime startTime;
+            try {
+                startTime = LocalDateTime.parse(item.getEnqueuedAt());
+            } catch (Exception e) {
+                continue;
+            }
+            if (!now.isAfter(startTime)) continue; // 아직 시작 안 됨
+
+            long elapsed = ChronoUnit.SECONDS.between(startTime, now);
+            int shouldHaveProduced = (int) Math.min(elapsed / secsEach, totalQty);
+            int alreadyProduced = item.getProducedQuantity();
+            int newlyProduced = shouldHaveProduced - alreadyProduced;
+            if (newlyProduced <= 0) continue;
+
+            final int toAdd = newlyProduced;
+            sampleRepo.findById(item.getSampleId()).ifPresent(sample -> {
+                sample.addStock(toAdd);
+                sampleRepo.update(sample);
+            });
+
+            if (shouldHaveProduced >= totalQty) {
                 orderRepo.findById(item.getOrderId()).ifPresent(order -> {
                     order.setStatus(OrderStatus.CONFIRMED);
                     orderRepo.update(order);
                 });
                 queueRepo.deleteById(item.getQueueId());
+            } else {
+                item.setProducedQuantity(shouldHaveProduced);
+                queueRepo.update(item);
             }
         }
     }
@@ -120,7 +141,8 @@ public class ProductionLineController {
             return;
         }
         Sample sample = sampleOpt.get();
-        sample.addStock(item.getActualProductionQuantity());
+        int remaining = item.getActualProductionQuantity() - item.getProducedQuantity();
+        sample.addStock(remaining);
         sampleRepo.update(sample);
 
         orderRepo.findById(item.getOrderId()).ifPresent(order -> {
@@ -174,11 +196,40 @@ public class ProductionLineController {
         }
         int actualProdQty = (int) Math.ceil(requiredQty / effectiveYield);
         int totalProdTime = sample.getAvgProductionTime(); // 단위당 생산 시간(초)
+
+        // FIFO: 마지막 항목 완료 시각이 새 항목의 시작 시각
+        LocalDateTime startTime = LocalDateTime.now();
+        for (ProductionQueueItem existing : queueRepo.findAll()) {
+            try {
+                LocalDateTime existingEnd = LocalDateTime.parse(existing.getEnqueuedAt())
+                    .plusSeconds((long) existing.getTotalProductionTime()
+                                 * existing.getActualProductionQuantity());
+                if (existingEnd.isAfter(startTime)) startTime = existingEnd;
+            } catch (Exception ignored) {}
+        }
+
         String queueId = "Q-" + String.format("%03d", queueRepo.findAll().size() + 1);
-        String enqueuedAt = LocalDateTime.now().toString();
+        String enqueuedAt = startTime.toString();
         queueRepo.enqueue(new ProductionQueueItem(
             queueId, order.getOrderId(), order.getSampleId(),
             order.getQuantity(), requiredQty, actualProdQty, totalProdTime, enqueuedAt));
+    }
+
+    // 첫 번째 항목이 미래 시각이면 전체 큐를 now부터 재스케줄링 (FIFO 즉시 시작 보장)
+    private void ensureFirstItemActive() {
+        List<ProductionQueueItem> items = queueRepo.findAll();
+        if (items.isEmpty()) return;
+        try {
+            LocalDateTime firstStart = LocalDateTime.parse(items.get(0).getEnqueuedAt());
+            if (!firstStart.isAfter(LocalDateTime.now())) return;
+            LocalDateTime cursor = LocalDateTime.now();
+            for (ProductionQueueItem item : items) {
+                item.setEnqueuedAt(cursor.toString());
+                queueRepo.update(item);
+                cursor = cursor.plusSeconds(
+                    (long) item.getTotalProductionTime() * item.getActualProductionQuantity());
+            }
+        } catch (Exception ignored) {}
     }
 
     private Map<String, String> buildSampleNames(List<ProductionQueueItem> items) {

@@ -39,14 +39,14 @@
     "sampleId": "S-010",
     "customerName": "SK하이닉스 기술팀",
     "quantity": 100,
-    "status": "PRODUCING"
+    "status": "RESERVED"
   },
   {
     "orderId": "ORD-20260612-0004",
     "sampleId": "S-005",
     "customerName": "퀄컴코리아",
     "quantity": 60,
-    "status": "CONFIRMED"
+    "status": "RELEASE"
   },
   {
     "orderId": "ORD-20260612-0005",
@@ -82,5 +82,12 @@
     "customerName": "퀄컴코리아",
     "quantity": 60,
     "status": "REJECTED"
+  },
+  {
+    "orderId": "ORD-20260612-0013",
+    "sampleId": "S-010",
+    "customerName": "sk",
+    "quantity": 100,
+    "status": "CONFIRMED"
   }
 ]

@@ -31,10 +31,10 @@ public class MonitoringView {
     }
 
     public void printHeader(String timestamp) {
-        System.out.println("=".repeat(40));
+        System.out.println("=".repeat(54));
         System.out.println("  S-Semi 생산주문관리 — 모니터링");
         System.out.println("  마지막 갱신: " + timestamp);
-        System.out.println("=".repeat(40));
+        System.out.println("=".repeat(54));
     }
 
     public void printOrderSummary(Map<OrderStatus, Long> statusCounts) {
@@ -51,11 +51,18 @@ public class MonitoringView {
 
     public void printInventory(List<SampleStatus> sampleStatuses) {
         System.out.println("[시료별 재고 현황]");
-        System.out.println("  ID       이름           재고      상태");
-        System.out.println("  -------- ------------ -------- ------");
+        System.out.println("  " +
+            ViewUtil.padRight("ID", 10) +
+            ViewUtil.padRight("이름", 22) +
+            ViewUtil.padRight("재고", 10) +
+            "상태");
+        System.out.println("  " + "-".repeat(46));
         for (SampleStatus s : sampleStatuses) {
-            System.out.printf("  %-8s  %-12s  %7d  %s%n",
-                s.sampleId(), s.name(), s.stock(), colorize(s.stockLevel()));
+            System.out.println("  " +
+                ViewUtil.padRight(s.sampleId(), 10) +
+                ViewUtil.padRight(s.name(), 22) +
+                ViewUtil.padRight(s.stock() + " ea", 10) +
+                colorize(s.stockLevel()));
         }
     }
 

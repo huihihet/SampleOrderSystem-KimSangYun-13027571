@@ -86,12 +86,16 @@ public class Router {
     }
 
     private void showMonitoringLive() {
-        monitoringController.showMonitoring(); // 첫 렌더는 호출 스레드에서 즉시 실행
+        productionLineController.checkAndAutoComplete();
+        monitoringController.showMonitoring();
         AtomicBoolean active = new AtomicBoolean(true);
         Thread t = new Thread(() -> {
             while (active.get()) {
                 try { Thread.sleep(3000); } catch (InterruptedException e) { break; }
-                if (active.get()) monitoringController.showMonitoring();
+                if (active.get()) {
+                    productionLineController.checkAndAutoComplete();
+                    monitoringController.showMonitoring();
+                }
             }
         }, "monitoring-refresh");
         t.setDaemon(true);

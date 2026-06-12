@@ -6,8 +6,9 @@
     "orderQuantity": 200,
     "requiredQuantity": 200,
     "actualProductionQuantity": 245,
-    "totalProductionTime": 5,
-    "enqueuedAt": "2026-06-12T16:05:55"
+    "totalProductionTime": 1,
+    "enqueuedAt": "2026-06-12T16:29:23",
+    "producedQuantity": 78
   },
   {
     "queueId": "Q-002",
@@ -16,17 +17,8 @@
     "orderQuantity": 150,
     "requiredQuantity": 150,
     "actualProductionQuantity": 190,
-    "totalProductionTime": 4,
-    "enqueuedAt": "2026-06-12T16:05:55"
-  },
-  {
-    "queueId": "Q-003",
-    "orderId": "ORD-20260612-0003",
-    "sampleId": "S-010",
-    "orderQuantity": 100,
-    "requiredQuantity": 100,
-    "actualProductionQuantity": 115,
-    "totalProductionTime": 3,
-    "enqueuedAt": "2026-06-12T16:05:55"
+    "totalProductionTime": 1,
+    "enqueuedAt": "2026-06-12T16:33:28",
+    "producedQuantity": 0
   }
 ]

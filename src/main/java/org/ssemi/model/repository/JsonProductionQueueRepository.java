@@ -45,6 +45,23 @@ public class JsonProductionQueueRepository implements ProductionQueueRepository 
     }
 
     @Override
+    public void update(ProductionQueueItem item) {
+        List<ProductionQueueItem> all = findAll();
+        boolean found = false;
+        for (int i = 0; i < all.size(); i++) {
+            if (all.get(i).getQueueId().equals(item.getQueueId())) {
+                all.set(i, item);
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            throw new java.util.NoSuchElementException("존재하지 않는 큐 ID: " + item.getQueueId());
+        }
+        JsonFileUtil.writeList(filePath, all);
+    }
+
+    @Override
     public void deleteById(String queueId) {
         List<ProductionQueueItem> all = findAll();
         boolean exists = all.stream()

@@ -24,6 +24,21 @@ class ProductionQueueItemTest {
     }
 
     @Test
+    void 생성자_producedQuantity_기본값_0() {
+        ProductionQueueItem item = new ProductionQueueItem(
+            "Q-001", "ORD-001", "S-001", 100, 50, 12, 360, "2026-06-12T10:00:00"
+        );
+        assertEquals(0, item.getProducedQuantity());
+    }
+
+    @Test
+    void setProducedQuantity_getter_검증() {
+        ProductionQueueItem item = new ProductionQueueItem();
+        item.setProducedQuantity(42);
+        assertEquals(42, item.getProducedQuantity());
+    }
+
+    @Test
     void noarg_생성자_setter_검증() {
         ProductionQueueItem item = new ProductionQueueItem();
         item.setQueueId("Q-002");

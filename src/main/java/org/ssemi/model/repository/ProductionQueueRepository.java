@@ -9,5 +9,6 @@ public interface ProductionQueueRepository {
     void enqueue(ProductionQueueItem item);
     List<ProductionQueueItem> findAll();
     Optional<ProductionQueueItem> findById(String queueId);
+    void update(ProductionQueueItem item);
     void deleteById(String queueId);
 }

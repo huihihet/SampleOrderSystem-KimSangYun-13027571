@@ -10,7 +10,7 @@ import java.util.Map;
 
 public class ProductionLineView {
 
-    private static final DateTimeFormatter TIME_FMT = DateTimeFormatter.ofPattern("HH:mm");
+    private static final DateTimeFormatter TIME_FMT = DateTimeFormatter.ofPattern("HH:mm:ss");
 
     public void clearScreen() {
         System.out.print("\033[H\033[2J");
@@ -34,32 +34,41 @@ public class ProductionLineView {
 
     public void printQueueList(List<ProductionQueueItem> items, Map<String, String> sampleNames) {
         clearScreen();
-        System.out.println("=".repeat(70));
+        System.out.println("=".repeat(72));
         System.out.printf("  생산 현황  (%s 기준)%n",
             LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")));
-        System.out.println("=".repeat(70));
-        System.out.printf("%-4s %-22s %-16s %-8s %-12s %-10s %s%n",
-            "순서", "주문번호", "시료명", "목표량", "잔여량", "완료시각", "남은시간");
-        System.out.println("-".repeat(80));
+        System.out.println("=".repeat(72));
+        System.out.println(
+            ViewUtil.padRight("순서", 5) +
+            ViewUtil.padRight("주문번호", 22) +
+            ViewUtil.padRight("시료명", 16) +
+            ViewUtil.padRight("목표량", 9) +
+            ViewUtil.padRight("잔여량", 9) +
+            ViewUtil.padRight("완료시각", 12) +
+            "남은시간");
+        System.out.println("-".repeat(72));
         for (int i = 0; i < items.size(); i++) {
             ProductionQueueItem item = items.get(i);
             String sampleName   = sampleNames.getOrDefault(item.getSampleId(), item.getSampleId());
-            int    remaining    = calcRemainingUnits(item);
-            String expectedTime = calcExpectedTime(item.getEnqueuedAt(), item.getTotalProductionTime(),
-                                                   item.getActualProductionQuantity());
-            String timeLeft     = calcTimeLeft(item.getEnqueuedAt(), item.getTotalProductionTime(),
+            boolean waiting     = isWaiting(item);
+            int     remaining   = waiting ? item.getActualProductionQuantity() : calcRemainingUnits(item);
+            String  expectedTime = calcExpectedTime(item.getEnqueuedAt(), item.getTotalProductionTime(),
+                                                    item.getActualProductionQuantity());
+            String  timeLeft    = waiting ? "(대기)"
+                                : calcTimeLeft(item.getEnqueuedAt(), item.getTotalProductionTime(),
                                                item.getActualProductionQuantity());
-            System.out.printf("%-4d %-22s %-16s %-8s %-12s %-10s %s%n",
-                i + 1,
-                item.getOrderId(),
-                sampleName,
-                item.getActualProductionQuantity() + " ea",
-                remaining + " ea",
-                expectedTime,
+            System.out.println(
+                ViewUtil.padRight(String.valueOf(i + 1), 5) +
+                ViewUtil.padRight(item.getOrderId(), 22) +
+                ViewUtil.padRight(sampleName, 16) +
+                ViewUtil.padRight(item.getActualProductionQuantity() + " ea", 9) +
+                ViewUtil.padRight(remaining + " ea", 9) +
+                ViewUtil.padRight(expectedTime, 12) +
                 timeLeft);
         }
-        System.out.println("-".repeat(80));
-        System.out.println("* totalProductionTime = 단위당 생산 시간(초)  |  잔여량은 1초마다 갱신");
+        System.out.println("-".repeat(72));
+        System.out.println("* 단위당 " + (items.isEmpty() ? "-" :
+            items.get(0).getTotalProductionTime()) + "초/ea  |  1초마다 자동 갱신");
     }
 
     public void printExitHint() {
@@ -83,6 +92,15 @@ public class ProductionLineView {
     public void printPause() {
         System.out.println();
         System.out.print("  [ Enter 키로 계속 ]  ");
+    }
+
+    // 아직 시작하지 않은 항목(FIFO 대기) 여부
+    private boolean isWaiting(ProductionQueueItem item) {
+        try {
+            return LocalDateTime.parse(item.getEnqueuedAt()).isAfter(LocalDateTime.now());
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     // 잔여 생산 수량: 경과 초 / 단위당 초수 = 완료된 수량 → 목표 - 완료
@@ -124,4 +142,5 @@ public class ProductionLineView {
             return "";
         }
     }
+
 }

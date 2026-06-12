@@ -16,9 +16,9 @@
   {
     "sampleId": "S-003",
     "name": "InP-HBT-C",
-    "avgProductionTime": 5,
+    "avgProductionTime": 1,
     "yield": 0.91,
-    "stock": 0
+    "stock": 78
   },
   {
     "sampleId": "S-004",
@@ -32,7 +32,7 @@
     "name": "GaAs-pHEMT-E",
     "avgProductionTime": 8,
     "yield": 0.68,
-    "stock": 135
+    "stock": 75
   },
   {
     "sampleId": "S-006",
@@ -44,7 +44,7 @@
   {
     "sampleId": "S-007",
     "name": "SiGe-HBT-G",
-    "avgProductionTime": 4,
+    "avgProductionTime": 1,
     "yield": 0.88,
     "stock": 0
   },
@@ -67,6 +67,6 @@
     "name": "Si-CMOS-J",
     "avgProductionTime": 3,
     "yield": 0.97,
-    "stock": 0
+    "stock": 115
   }
 ]

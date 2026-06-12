@@ -17,23 +17,28 @@ public class ReleaseView {
 
     public void printOrderList(List<Order> orders) {
         clearScreen();
-        System.out.println("=".repeat(63));
+        System.out.println("=".repeat(76));
         System.out.println("  출고 처리");
-        System.out.println("=".repeat(63));
-        System.out.printf("%-5s %-22s %-9s %-18s %-8s %s%n",
-            "번호", "주문번호", "시료ID", "고객명", "수량", "상태");
-        System.out.println("-".repeat(72));
+        System.out.println("=".repeat(76));
+        System.out.println(
+            ViewUtil.padRight("번호", 6) +
+            ViewUtil.padRight("주문번호", 22) +
+            ViewUtil.padRight("시료ID", 10) +
+            ViewUtil.padRight("고객명", 22) +
+            ViewUtil.padRight("수량", 9) +
+            "상태");
+        System.out.println("-".repeat(76));
         for (int i = 0; i < orders.size(); i++) {
             Order o = orders.get(i);
-            System.out.printf("%-5d %-22s %-9s %-18s %-8s %s%n",
-                i + 1,
-                o.getOrderId(),
-                o.getSampleId(),
-                o.getCustomerName(),
-                o.getQuantity() + "ea",
+            System.out.println(
+                ViewUtil.padRight(String.valueOf(i + 1), 6) +
+                ViewUtil.padRight(o.getOrderId(), 22) +
+                ViewUtil.padRight(o.getSampleId(), 10) +
+                ViewUtil.padRight(o.getCustomerName(), 22) +
+                ViewUtil.padRight(o.getQuantity() + " ea", 9) +
                 o.getStatus());
         }
-        System.out.println("-".repeat(72));
+        System.out.println("-".repeat(76));
     }
 
     public void printSuccess(String message) {
